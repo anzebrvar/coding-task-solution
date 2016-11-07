@@ -19,40 +19,41 @@ sample output for 16:10
 
 import sys
 
-if len(sys.argv) <= 1:
-    print "Please specify the current time in HH:MM format."
+
+def get_task_time(config, starting_h, starting_m):
+
+    time_day = "today"
+    time_m = starting_m
+    time_h = starting_h
+    minute, hour, task = config.split()
+    m = minute
+    h = hour
+
+    while True:
+        if minute == '*':
+            m = time_m
+        if hour == '*':
+            h = time_h
+
+        if int(m) == time_m and int(h) == time_h:
+            solution = "%d:%02d %s - %s" % (time_h, time_m, time_day, task)
+            return solution
+
+        time_m += 1
+        if time_m >= 60:
+            time_h += 1
+            time_m = 0
+        if time_h >= 24:
+            time_h = 0
+            time_day = "tomorrow"
+
 
 time_h, time_m = [int(x) for x in sys.argv[1].split(':')]
-time_day = "today"
-config = []
 
-for line in open('scheduler.conf'):
-    config.append(line.split())
-
-solutions = [None]*len(config)
-
-
-while None in solutions:
-
-    for i in range(len(config)):
-        minute, hour, task = config[i]
-
-        if minute == '*':
-            minute = time_m
-        if hour == '*':
-            hour = time_h
-
-        if int(minute) == time_m and int(hour) == time_h and solutions[i] is None:
-            solutions[i] = "%d:%02d %s - %s" % (time_h, time_m, time_day, task)
-
-    time_m += 1
-    if time_m >= 60:
-        time_h += 1
-        time_m = 0
-    if time_h >= 24:
-        time_h = 0
-        time_day = "tomorrow"
-
-
-for s in solutions:
-    print s
+user_input = raw_input()
+while user_input:
+    print get_task_time(user_input, time_h, time_m)
+    try:
+        user_input = raw_input()
+    except:
+        user_input = None
